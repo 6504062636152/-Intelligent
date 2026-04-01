@@ -11,8 +11,12 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.models import load_model
 from PIL import Image
+
+(_, _), (X_cifar, _) = cifar10.load_data()
+X_cifar = X_cifar.astype("float32") / 255.0
 
 # --- ตั้งค่าหน้าเว็บ ---
 st.set_page_config(page_title="Project IS 2568", layout="wide")
