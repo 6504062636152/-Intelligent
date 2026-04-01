@@ -14,11 +14,29 @@ import joblib
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.models import load_model
 from PIL import Image
-model = load_model("cifar10_model.h5")
-model.save("cifar10_model.keras")
+import os
 
-(_, _), (X_cifar, _) = cifar10.load_data()
-X_cifar = X_cifar.astype("float32") / 255.0
+# --- ฟังก์ชันสำหรับโหลด Model แบบ Cache ---
+@st.cache_resource
+def load_cifar_model():
+    # ตรวจสอบว่ามีไฟล์ .keras หรือยัง ถ้ามีให้ใช้ .keras จะปลอดภัยกว่า
+    if os.path.exists("cifar10_model.keras"):
+        return load_model("cifar10_model.keras")
+    else:
+        return load_model("cifar10_model.h5")
+
+@st.cache_resource
+def load_titanic_model():
+    return joblib.load('titanic_model.pkl')
+
+# โหลดข้อมูล CIFAR-10 ครั้งเดียว
+@st.cache_data
+def load_cifar_data():
+    (_, _), (X_test, _) = cifar10.load_data()
+    X_test = X_test.astype("float32") / 255.0
+    return X_test
+
+X_cifar = load_cifar_data()
 
 # --- ตั้งค่าหน้าเว็บ ---
 st.set_page_config(page_title="Project IS 2568", layout="wide")
@@ -108,9 +126,21 @@ elif page == "3. NN Explanation (CIFAR-10)":
 # ---------------------------------------------------------
 elif page == "4. NN Testing (CIFAR-10)":
     st.header("ทดสอบโมเดลจำแนกรูปภาพ (CIFAR-10)")
-    class_names = ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
-    index = st.slider("เลือกภาพ (0-9999):", 0, 9999, 0)
-    image = X_cifar[index]
-    pred = cifar10_model.predict(image.reshape(1, 32, 32, 3))
-    label = class_names[np.argmax(pred)]
-    st.image(image, caption=f"Prediction: {label}", width=150)
+    
+    try:
+        # เรียกใช้ฟังก์ชันโหลดโมเดลที่ทำ Cache ไว้
+        nn_model = load_cifar_model() 
+        
+        class_names = ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
+        index = st.slider("เลือกภาพ (0-9999):", 0, 9999, 0)
+        
+        image = X_cifar[index]
+        
+        # ใช้ชื่อตัวแปรที่โหลดมา (nn_model)
+        pred = nn_model.predict(image.reshape(1, 32, 32, 3))
+        label = class_names[np.argmax(pred)]
+        
+        st.image(image, caption=f"Prediction: {label}", width=150)
+    except Exception as e:
+        st.error(f"เกิดข้อผิดพลาดในการโหลดโมเดล: {e}")
+        st.info("คำแนะนำ: ลองเซฟโมเดลเป็นนามสกุล .keras ในเครื่องคุณก่อนแล้วค่อย Upload ใหม่")
