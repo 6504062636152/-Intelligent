@@ -14,6 +14,8 @@ import joblib
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.models import load_model
 from PIL import Image
+model = load_model("cifar10_model.h5")
+model.save("cifar10_model.keras")
 
 (_, _), (X_cifar, _) = cifar10.load_data()
 X_cifar = X_cifar.astype("float32") / 255.0
@@ -22,7 +24,7 @@ X_cifar = X_cifar.astype("float32") / 255.0
 st.set_page_config(page_title="Project IS 2568", layout="wide")
 @st.cache_resource
 def load_nn_model():
-    return load_model("cifar10_model.h5", compile=False)
+    return load_model("cifar10_model.keras", compile=False)
 
 cifar10_model = load_nn_model()
 # --- ฟังก์ชันสำหรับโหลด Model ---
