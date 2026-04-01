@@ -22,11 +22,6 @@ X_cifar = X_cifar.astype("float32") / 255.0
 
 # --- ตั้งค่าหน้าเว็บ ---
 st.set_page_config(page_title="Project IS 2568", layout="wide")
-@st.cache_resource
-def load_nn_model():
-    return load_model("cifar10_model.keras", compile=False)
-
-cifar10_model = load_nn_model()
 # --- ฟังก์ชันสำหรับโหลด Model ---
 # @st.cache_resource
 # def load_ml_model():
