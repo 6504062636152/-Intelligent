@@ -62,18 +62,36 @@ page = st.sidebar.selectbox("เลือกหน้าเว็บ", [
 # หน้าที่ 1: ML Explanation [cite: 15, 16, 17]
 # ---------------------------------------------------------
 if page == "1. ML Explanation (Titanic)":
-    st.header("การพัฒนาโมเดล Ensemble Machine Learning (Titanic)")
-    st.subheader("1. การเตรียมข้อมูล (Data Preparation)")
-    st.write("- **Dataset**: ข้อมูลผู้โดยสาร Titanic จาก Kaggle [cite: 3, 4]")
-    st.write("- **ความไม่สมบูรณ์**: พบค่าว่างใน Age และ Embarked จึงทำการเติมค่าด้วย Mean และ Mode [cite: 6, 7]")
-    st.write("- **Feature Engineering**: แปลง Sex และ Embarked เป็นตัวเลขเพื่อเข้าโมเดล [cite: 5]")
+    st.title("🚢 Titanic Survival Prediction Analysis")
+    st.divider()
 
-    st.subheader("2. ทฤษฎีอัลกอริทึม")
-    st.write("ใช้วิธี **Ensemble Learning (Voting)** ที่ประกอบด้วย 3 โมเดล[cite: 10]:")
-    st.write("1. Logistic Regression 2. Random Forest 3. Support Vector Machine (SVM)")
+    col1, col2 = st.columns([1, 1])
 
-    st.subheader("3. แหล่งอ้างอิง")
-    st.write("- Scikit-learn Documentation")
+    with col1:
+        st.subheader("1. การเตรียมข้อมูล (Data Pipeline)")
+        st.write("""
+        ก่อนจะนำข้อมูลเข้าสู่โมเดล เราต้องผ่านกระบวนการ **Data Cleaning** ดังนี้:
+        * **Handling Missing Values:** * `Age`: เติมค่าว่างด้วยค่าเฉลี่ย (Mean) 
+            * `Embarked`: เติมด้วยฐานนิยม (Mode)
+        * **Feature Selection:** เลือกใช้ตัวแปรที่มีอิทธิพลสูง ได้แก่ *Pclass, Sex, Age, Fare*
+        * **Categorical Encoding:** แปลงเพศ (Sex) ให้เป็นตัวเลข ($0$ และ $1$) เพื่อให้โมเดลคำนวณได้
+        """)
+
+    with col2:
+        st.subheader("2. อัลกอริทึม: Ensemble Learning")
+        st.info("เราใช้เทคนิค **Voting Classifier** ซึ่งเป็นการรวมพลังของ 3 โมเดลหลัก")
+        st.write("""
+        1.  **Logistic Regression:** ใช้หาความสัมพันธ์เชิงเส้นเพื่อทำนายโอกาสการรอดชีวิต
+        2.  **Random Forest:** ใช้การสร้าง 'ต้นไม้ตัดสินใจ' หลายต้นมาช่วยกันโหวต ลดปัญหา Overfitting
+        3.  **SVM (Support Vector Machine):** สร้างเส้นแบ่ง (Hyperplane) ที่ดีที่สุดเพื่อแยกกลุ่มข้อมูล
+        """)
+
+    st.divider()
+    st.subheader("ทำไมต้อง Ensemble?")
+    st.markdown("""
+    การใช้ **Majority Voting** ช่วยลดความผิดพลาด (Variance) ที่อาจเกิดขึ้นจากโมเดลใดโมเดลหนึ่งเพียงลำพัง 
+    ทำให้การพยากรณ์มีความแม่นยำและเสถียร (Robustness) มากขึ้นเมื่อเจอข้อมูลใหม่ๆ
+    """)
 
 # ---------------------------------------------------------
 # หน้าที่ 2: ML Testing [cite: 18, 24]
@@ -111,15 +129,44 @@ elif page == "2. ML Testing (Titanic)":
 # หน้าที่ 3: NN Explanation [cite: 15, 16, 17]
 # ---------------------------------------------------------
 elif page == "3. NN Explanation (CIFAR-10)":
-    st.header("การพัฒนาโมเดล Neural Network (CIFAR-10)")
-    st.subheader("1. การเตรียมข้อมูล")
-    st.write("- ทำการ Normalize รูปภาพโดยหารด้วย 255.0 เพื่อให้ค่า Pixel อยู่ในช่วง $0$ ถึง $1$")
+    st.title("🖼️ CIFAR-10 Image Classification with CNN")
+    st.divider()
 
-    st.subheader("2. ทฤษฎีอัลกอริทึม")
-    st.write("ใช้โครงสร้าง **Convolutional Neural Network (CNN)** [cite: 12, 13]")
-    st.write("- Convolutional Layer สำหรับดึงลักษณะเด่น")
-    st.write("- Max Pooling สำหรับลดขนาดข้อมูล")
-    st.write("- Dense Layer สำหรับจัดหมวดหมู่ 10 ประเภท")
+    # ส่วนบน: การเตรียมข้อมูล
+    st.subheader("1. Image Pre-processing")
+    st.write("""
+    รูปภาพดิจิทัลประกอบด้วยค่า Pixel $0-255$ เราทำการ **Normalization** โดยการหารด้วย $255.0$ เพื่อปรับช่วงข้อมูลให้อยู่ระหว่าง $0$ ถึง $1$
+    วิธีนี้ช่วยให้ Gradient ในการฝึกโมเดลไม่ใหญ่จนเกินไปและทำให้ AI เรียนรู้ได้เร็วขึ้น
+    """)
+
+    st.divider()
+
+    # ส่วนล่าง: โครงสร้าง Neural Network
+    st.subheader("2. โครงสร้าง Convolutional Neural Network (CNN)")
+    
+    c1, c2, c3 = st.columns(3)
+    
+    with c1:
+        st.markdown("### **Feature Extraction**")
+        st.write("""
+        * **Convolutional Layer:** ใช้ Filters เลื่อนไปทั่วภาพเพื่อดึงลักษณะเด่น (ขอบภาพ, รูปทรง)
+        * **ReLU Activation:** ฟังก์ชัน $f(x) = \max(0, x)$ เพื่อตัดค่าติดลบออกไป
+        """)
+        
+    with c2:
+        st.markdown("### **Dimension Reduction**")
+        st.write("""
+        * **Max Pooling:** การสุ่มเลือกค่าที่มากที่สุดในพื้นที่ เพื่อลดขนาดข้อมูลแต่ยังรักษาลักษณะสำคัญไว้
+        """)
+
+    with c3:
+        st.markdown("### **Classification**")
+        st.write("""
+        * **Flatten:** แปลงข้อมูลภาพจากมิติสูงให้เป็นเส้นตรง
+        * **Dense Layer:** ชั้นประมวลผลสุดท้ายเพื่อจัดหมวดหมู่ภาพเป็น 10 ประเภท (Softmax)
+        """)
+
+    st.success("โมเดล CNN นี้มีความสามารถพิเศษในการมองเห็น 'ความสัมพันธ์เชิงพื้นที่' ของเม็ดสี ซึ่งดีกว่า Neural Network แบบธรรมดามาก")
 
 # ---------------------------------------------------------
 # หน้าที่ 4: NN Testing [cite: 18, 24]
