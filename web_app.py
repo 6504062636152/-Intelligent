@@ -103,27 +103,9 @@ elif page == "3. NN Explanation (CIFAR-10)":
 # ---------------------------------------------------------
 elif page == "4. NN Testing (CIFAR-10)":
     st.header("ทดสอบโมเดลจำแนกรูปภาพ (CIFAR-10)")
-    uploaded_file = st.file_uploader("อัปโหลดรูปภาพ...", type=["jpg", "png"])
-
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-        st.image(image, caption='รูปภาพที่อัปโหลด', width=300)
-
-        if st.button("จำแนกรูปภาพ"):
-            try:
-                # 1. โหลดโมเดล
-                nn_model = load_model('cifar10_model (2).h5')
-
-                # 2. เตรียมรูปภาพ (Resize เป็น 32x32 และ Normalize)
-                img = image.resize((32, 32))
-                img_array = np.array(img) / 255.0  # Normalization [cite: 16]
-                img_array = np.expand_dims(img_array, axis=0)
-
-                # 3. ทำนายผล
-                predictions = nn_model.predict(img_array)
-                class_names = ['เครื่องบิน', 'รถยนต์', 'นก', 'แมว', 'กวาง', 'สุนัข', 'กบ', 'ม้า', 'เรือ', 'รถบรรทุก']
-                result = class_names[np.argmax(predictions)]
-
-                st.success(f"ผลการทำนายคือ: {result}")
-            except Exception as e:
-                st.error(f"เกิดข้อผิดพลาด: {e}")
+    class_names = ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
+    index = st.slider("เลือกภาพ (0-9999):", 0, 9999, 0)
+    image = X_cifar[index]
+    pred = cifar10_model.predict(image.reshape(1, 32, 32, 3))
+    label = class_names[np.argmax(pred)]
+    st.image(image, caption=f"Prediction: {label}", width=150)
