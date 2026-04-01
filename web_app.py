@@ -22,7 +22,7 @@ X_cifar = X_cifar.astype("float32") / 255.0
 st.set_page_config(page_title="Project IS 2568", layout="wide")
 @st.cache_resource
 def load_nn_model():
-    return load_model('cifar10_model.h5', compile=False)
+    return load_model("cifar10_model.h5", compile=Fals)
 
 cifar10_model = load_nn_model()
 # --- ฟังก์ชันสำหรับโหลด Model ---
